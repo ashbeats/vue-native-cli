@@ -269,7 +269,7 @@ function getVueNativeDevDependencyPackageInstallationCommand() {
 async function setupVueNativeApp(projectName, cmd, isCrna = false) {
   // process.chdir(projectName);
   const rnCliFile = fs.readFileSync(
-    path.resolve(__dirname, './utils/metro.config.js'),
+    path.resolve(__dirname, './template/metro.config.js'),
   )
   fs.writeFileSync(
     path.join(projectName, constantObjects.metroConfigFile),
@@ -277,7 +277,7 @@ async function setupVueNativeApp(projectName, cmd, isCrna = false) {
   )
 
   const transformFileContent = fs.readFileSync(
-    path.resolve(__dirname, './utils/vueTransformerPlugin.js'),
+    path.resolve(__dirname, './template/vueTransformerPlugin.js'),
   )
   fs.writeFileSync(
     path.join(projectName, constantObjects.vueTransformerFileName),
@@ -311,7 +311,7 @@ async function setupVueNativeApp(projectName, cmd, isCrna = false) {
   process.chdir('..')
 
   const appVueFileContent = fs.readFileSync(
-    path.resolve(__dirname, './utils/app.vue'),
+    path.resolve(__dirname, './template/app.vue'),
   )
   fs.writeFileSync(
     path.join(projectName, constantObjects.appVueFileName),

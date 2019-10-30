@@ -1,60 +1,60 @@
 #!/usr/bin/env node
 
-const fs = require("fs");
-const path = require("path");
-const chalk = require("chalk");
-const spawnSync = require("child_process").spawnSync;
-const program = require("commander");
-const prompt = require("prompt");
-const ora = require("ora");
-const union = require("lodash.union")
+const fs = require('fs')
+const path = require('path')
+const chalk = require('chalk')
+const spawnSync = require('child_process').spawnSync
+const program = require('commander')
+const prompt = require('prompt')
+const ora = require('ora')
+const union = require('lodash.union')
 
-const promptModule = require("./prompt/index");
-const constantObjects = require("./utils/constants");
-const validationObjects = require("./utils/validation");
-const projectPackageJson = require("../package.json");
+const promptModule = require('./prompt/index')
+const constantObjects = require('./utils/constants')
+const validationObjects = require('./utils/validation')
+const projectPackageJson = require('../package.json')
 
-program.version(projectPackageJson.version, "-v, --version");
+program.version(projectPackageJson.version, '-v, --version')
 
 program
-  .command("init <projectName>")
+  .command('init <projectName>')
   // .command("init <projectName>", "create a Vue Native project")
-  .option("--no-expo", "use react-native-cli instead of expo-cli")
-  .option("--no-crna", "use react-native-cli instead of expo-cli")
+  .option('--no-expo', 'use react-native-cli instead of expo-cli')
+  .option('--no-crna', 'use react-native-cli instead of expo-cli')
   .action(function (projectName, cmd) {
-    let isCrnaProject = false;
+    let isCrnaProject = false
     if (cmd.expo && cmd.crna) {
-      isCrnaProject = true;
-      const isCrnaInstalledPackageVersion = validationObjects.getCrnaVersionIfAvailable();
+      isCrnaProject = true
+      const isCrnaInstalledPackageVersion = validationObjects.getCrnaVersionIfAvailable()
       // check if Create-react-native-app dependency is present or not
       if (!isCrnaInstalledPackageVersion) {
         terminateTheProcess(
-          "Please globally install expo-cli"
-        );
-        return;
+          'Please globally install expo-cli',
+        )
+        return
       } else {
         console.log(
-          chalk.cyan("Using globally installed expo-cli " + isCrnaInstalledPackageVersion + "\n"),
-        );
+          chalk.cyan('Using globally installed expo-cli ' + isCrnaInstalledPackageVersion + '\n'),
+        )
       }
     } else {
-      const reactNativeCLIVersion = validationObjects.getReactNativeCLIifAvailable();
+      const reactNativeCLIVersion = validationObjects.getReactNativeCLIifAvailable()
       if (!reactNativeCLIVersion) {
         terminateTheProcess(
-          "Please globally install react-native-cli"
-        );
-        return;
+          'Please globally install react-native-cli',
+        )
+        return
       } else {
         console.log(
-          chalk.cyan("Using globally installed react-native-cli " + reactNativeCLIVersion + "\n"),
-        );
+          chalk.cyan('Using globally installed react-native-cli ' + reactNativeCLIVersion + '\n'),
+        )
       }
     }
 
     const isProjectNameValidResponse = validationObjects.isProjectNameValid(
       projectName,
-      isCrnaProject
-    );
+      isCrnaProject,
+    )
 
     // if project Name is invalid Ask User, Do They Want to Continue
     if (!isProjectNameValidResponse) {
@@ -63,31 +63,31 @@ program
         init,
         terminateTheProcess,
         projectName,
-        cmd
-      );
+        cmd,
+      )
     } else {
-      init(projectName, cmd, isCrnaProject);
+      init(projectName, cmd, isCrnaProject)
     }
-  });
+  })
 
 program
   .arguments('<command>')
   .action((cmd) => {
-    program.outputHelp();
-    console.log(`  ` + chalk.red(`\n  Unknown command ${chalk.yellow(cmd)}.`));
-    console.log();
-});
+    program.outputHelp()
+    console.log(`  ` + chalk.red(`\n  Unknown command ${chalk.yellow(cmd)}.`))
+    console.log()
+})
 
-program.parse(process.argv);
+program.parse(process.argv)
 
 if (!program.args.length) {
-  program.help();
+  program.help()
 }
 
 function init(projectName, cmd, useExpo) {
   const createProject = useExpo
     ? createExpoProject
-    : createReactNativeCLIProject;
+    : createReactNativeCLIProject
 
   if (fs.existsSync(projectName)) {
     promptModule.createVueProjectAfterConfirmation(
@@ -95,206 +95,204 @@ function init(projectName, cmd, useExpo) {
       createProject,
       terminateTheProcess,
       projectName,
-      cmd
-    );
+      cmd,
+    )
   } else {
-    createProject(projectName, cmd);
+    createProject(projectName, cmd)
   }
 }
 
 async function createReactNativeCLIProject(projectName, cmd) {
-  const root = path.resolve(projectName);
   if (fs.existsSync(projectName)) {
-    removeExistingDirectory(projectName);
+    removeExistingDirectory(projectName)
   }
-  console.log(chalk.green(`Creating Vue Native project ${chalk.bold(projectName)}\n`));
-  createRNProjectSync(projectName, cmd);
-  installPackages(projectName, cmd);
-  await setupVueNativeApp(projectName, cmd);
+  console.log(chalk.green(`Creating Vue Native project ${chalk.bold(projectName)}\n`))
+  createRNProjectSync(projectName, cmd)
+  installPackages(projectName, cmd)
+  await setupVueNativeApp(projectName, cmd)
 }
 
 async function createExpoProject(projectName, cmd) {
-  const root = path.resolve(projectName);
   if (fs.existsSync(projectName)) {
-    removeExistingDirectory(projectName);
+    removeExistingDirectory(projectName)
   }
-  console.log(chalk.green(`Creating Vue Native project ${chalk.bold(projectName)}\n`));
-  createCrnaProjectSync(projectName, cmd);
-  installPackages(projectName, cmd);
-  await setupVueNativeApp(projectName, cmd, true);
+  console.log(chalk.green(`Creating Vue Native project ${chalk.bold(projectName)}\n`))
+  createCrnaProjectSync(projectName, cmd)
+  installPackages(projectName, cmd)
+  await setupVueNativeApp(projectName, cmd, true)
 }
 
-function createCrnaProjectSync(projectName, cmd) {
+function createCrnaProjectSync(projectName) {
   const spinner = ora(
-    chalk.cyan("Creating project with expo-cli\n"),
-  ).start();
-  const crnaProjectCreationResponse = spawnSync(
+    chalk.cyan('Creating project with expo-cli\n'),
+  ).start()
+  spawnSync(
     constantObjects.crnaPackageName,
     ['init', '--template=blank', projectName],
-    { stdio: "inherit", shell: true }
-  );
+    { stdio: 'inherit', shell: true },
+  )
   spinner.succeed(
-    chalk.green("Created project with expo-cli\n"),
-  );
+    chalk.green('Created project with expo-cli\n'),
+  )
 }
 
-function createRNProjectSync(projectName, cmd) {
+function createRNProjectSync(projectName) {
   const spinner = ora(
-    chalk.cyan("Creating project with react-native-cli\n"),
-  ).start();
-  const rnProjectCreationResponse = spawnSync(
+    chalk.cyan('Creating project with react-native-cli\n'),
+  ).start()
+  spawnSync(
     constantObjects.rnPackageName,
-    ["init", projectName, "--version", constantObjects.stableRNVersion],
-    { stdio: "inherit", shell: true }
-  );
+    ['init', projectName, '--version', constantObjects.stableRNVersion],
+    { stdio: 'inherit', shell: true },
+  )
   spinner.succeed(
-    chalk.green("Created project with react-native-cli\n"),
-  );
+    chalk.green('Created project with react-native-cli\n'),
+  )
 }
 
 function removeExistingDirectory(directoryName) {
   const spinner = ora(
     chalk.yellow(`Removing pre-existing directory with name ${directoryName}\n`),
-  ).start();
-  const crnaProjectCreationResponse = spawnSync("rm", ["-fr", directoryName], {
-    stdio: "inherit"
-  });
+  ).start()
+  spawnSync('rm', ['-fr', directoryName], {
+    stdio: 'inherit',
+  })
   spinner.succeed(
     chalk.yellow(`Removed pre-existing directory with name ${directoryName}\n`),
-  );
+  )
 }
 
 // Get the `sourceExts` from the default metro configuration
 // Returns an array like ['js', 'json', 'ts', 'tsx']
 async function getSourceFileExtensions() {
-  const { getDefaultConfig } = require(`${process.cwd()}/node_modules/metro-config/src/index.js`);
+  const { getDefaultConfig } = require(`${process.cwd()}/node_modules/metro-config/src/index.js`)
   const {
-    resolver: { sourceExts: defaultSourceExts }
-  } = await getDefaultConfig();
+    resolver: { sourceExts: defaultSourceExts },
+  } = await getDefaultConfig()
 
-  const sourceExts = union(defaultSourceExts, constantObjects.vueFileExtensions);
+  const sourceExts = union(defaultSourceExts, constantObjects.vueFileExtensions)
   // `sourceExts` now looks like ['js', 'json', 'ts', 'tsx', 'vue']
 
-  return sourceExts;
+  return sourceExts
 }
 
-function installPackages(projectName, cmd) {
-  process.chdir(projectName);
-  installVueNativeDependency();
-  installVueNativeDevDependency();
-  process.chdir("..");
+function installPackages(projectName) {
+  process.chdir(projectName)
+  installVueNativeDependency()
+  installVueNativeDevDependency()
+  process.chdir('..')
 }
 
 function installVueNativeDependency() {
   const spinner = ora(
-    chalk.cyan("Installing Vue Native dependencies\n"),
-  ).start();
-  const commandObj = getVueNativeDependencyPackageInstallationCommand();
-  const crnaProjectCreationResponse = spawnSync(
+    chalk.cyan('Installing Vue Native dependencies\n'),
+  ).start()
+  const commandObj = getVueNativeDependencyPackageInstallationCommand()
+  spawnSync(
     commandObj.commandName,
     commandObj.optionsArr,
-    { shell: true, stdio: "inherit" }
-  );
+    { shell: true, stdio: 'inherit' },
+  )
   spinner.succeed(
-    chalk.green("Installed Vue Native dependencies\n")
-  );
+    chalk.green('Installed Vue Native dependencies\n'),
+  )
 }
 function installVueNativeDevDependency() {
   const spinner = ora(
-    chalk.cyan("Installing Vue Native devDependencies\n"),
-  ).start();
-  const commandObj = getVueNativeDevDependencyPackageInstallationCommand();
-  const crnaProjectCreationResponse = spawnSync(
+    chalk.cyan('Installing Vue Native devDependencies\n'),
+  ).start()
+  const commandObj = getVueNativeDevDependencyPackageInstallationCommand()
+  spawnSync(
     commandObj.commandName,
     commandObj.optionsArr,
-    { shell: true, stdio: "inherit" }
-  );
+    { shell: true, stdio: 'inherit' },
+  )
   spinner.succeed(
-    chalk.green("Installed Vue Native devDependencies\n"),
-  );
+    chalk.green('Installed Vue Native devDependencies\n'),
+  )
 }
 
 function getVueNativeDependencyPackageInstallationCommand() {
-  const isYarnPresent = validationObjects.getYarnVersionIfAvailable();
-  let vueNativePkgInstallationCommand = null;
+  const isYarnPresent = validationObjects.getYarnVersionIfAvailable()
+  let vueNativePkgInstallationCommand = null
   if (isYarnPresent) {
     vueNativePkgInstallationCommand = {
-      commandName: "yarn",
+      commandName: 'yarn',
       optionsArr: [
-        "add",
+        'add',
         `${constantObjects.vueNativePackages.vueNativeCore}`,
         `${constantObjects.vueNativePackages.vueNativeHelper}`,
-        "--exact"
-      ]
-    };
+        '--exact',
+      ],
+    }
   } else {
     vueNativePkgInstallationCommand = {
-      commandName: "npm",
+      commandName: 'npm',
       optionsArr: [
-        "install",
+        'install',
         `${constantObjects.vueNativePackages.vueNativeCore}`,
         `${constantObjects.vueNativePackages.vueNativeHelper}`,
-        "--save"
-      ]
-    };
+        '--save',
+      ],
+    }
   }
-  return vueNativePkgInstallationCommand;
+  return vueNativePkgInstallationCommand
 }
 function getVueNativeDevDependencyPackageInstallationCommand() {
-  const isYarnPresent = validationObjects.getYarnVersionIfAvailable();
-  let vueNativePkgInstallationCommand = null;
+  const isYarnPresent = validationObjects.getYarnVersionIfAvailable()
+  let vueNativePkgInstallationCommand = null
   if (isYarnPresent) {
     vueNativePkgInstallationCommand = {
-      commandName: "yarn",
+      commandName: 'yarn',
       optionsArr: [
-        "add",
+        'add',
         `${constantObjects.vueNativePackages.vueNativeScripts}`,
         '@babel/core@^7.0.0-0',
-        "--exact",
-        "--dev"
-      ]
-    };
+        '--exact',
+        '--dev',
+      ],
+    }
   } else {
     vueNativePkgInstallationCommand = {
-      commandName: "npm",
+      commandName: 'npm',
       optionsArr: [
-        "install",
+        'install',
         `${constantObjects.vueNativePackages.vueNativeScripts}`,
         '@babel/core@^7.0.0-0',
-        "--save-dev"
-      ]
-    };
+        '--save-dev',
+      ],
+    }
   }
-  return vueNativePkgInstallationCommand;
+  return vueNativePkgInstallationCommand
 }
 
 async function setupVueNativeApp(projectName, cmd, isCrna = false) {
   // process.chdir(projectName);
   const rnCliFile = fs.readFileSync(
-    path.resolve(__dirname, "./utils/metro.config.js")
-  );
+    path.resolve(__dirname, './utils/metro.config.js'),
+  )
   fs.writeFileSync(
     path.join(projectName, constantObjects.metroConfigFile),
-    rnCliFile
-  );
+    rnCliFile,
+  )
 
   const transformFileContent = fs.readFileSync(
-    path.resolve(__dirname, "./utils/vueTransformerPlugin.js")
-  );
+    path.resolve(__dirname, './utils/vueTransformerPlugin.js'),
+  )
   fs.writeFileSync(
     path.join(projectName, constantObjects.vueTransformerFileName),
-    transformFileContent
-  );
+    transformFileContent,
+  )
 
-  process.chdir(projectName);
-  spawnSync("mv", ["App.js", "App.vue"]);
-  spawnSync("rm", ["App.test.js"]);
+  process.chdir(projectName)
+  spawnSync('mv', ['App.js', 'App.vue'])
+  spawnSync('rm', ['App.test.js'])
   // If created through crna
   //
   if (isCrna) {
-    const expoObj = JSON.parse(fs.readFileSync(path.join(constantObjects.appJsonPath), 'utf8'));
+    const expoObj = JSON.parse(fs.readFileSync(path.join(constantObjects.appJsonPath), 'utf8'))
 
-    const sourceExts = await getSourceFileExtensions();
+    const sourceExts = await getSourceFileExtensions()
 
     // Modify the app.json file to add `sourceExts`
     // Adding `sourceExts` to metro.config.js stopped working for certain
@@ -302,33 +300,33 @@ async function setupVueNativeApp(projectName, cmd, isCrna = false) {
     // This fixes #23
     expoObj.expo.packagerOpts = {
       config: 'metro.config.js',
-      sourceExts: sourceExts,
-    };
+      sourceExts,
+    }
 
     fs.writeFileSync(
       path.join(constantObjects.appJsonPath),
-      JSON.stringify(expoObj, null, 2)
-    );
+      JSON.stringify(expoObj, null, 2),
+    )
   }
-  process.chdir("..");
+  process.chdir('..')
 
   const appVueFileContent = fs.readFileSync(
-    path.resolve(__dirname, "./utils/app.vue")
-  );
+    path.resolve(__dirname, './utils/app.vue'),
+  )
   fs.writeFileSync(
     path.join(projectName, constantObjects.appVueFileName),
-    appVueFileContent
-  );
+    appVueFileContent,
+  )
   console.log(
-    chalk.green("Setup complete!")
-  );
+    chalk.green('Setup complete!'),
+  )
 }
 
 function terminateTheProcess(msg) {
   if (msg) {
-    console.log(chalk.red(msg));
+    console.log(chalk.red(msg))
   } else {
-    console.log(chalk.red("Vue Native Project initialization cancelled "));
+    console.log(chalk.red('Vue Native Project initialization cancelled '))
   }
-  process.exit(0);
+  process.exit(0)
 }

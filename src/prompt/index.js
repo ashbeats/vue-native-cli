@@ -1,30 +1,28 @@
-const chalk = require("chalk");
-
 function promptForInvalidProjectName(
   promptObj,
   onSuccessAnswer,
   onFailedAnswer,
   projectName,
-  cmd
+  cmd,
 ) {
-  promptObj.start();
+  promptObj.start()
 
   const property = {
-    name: "invalidProjectName",
+    name: 'invalidProjectName',
     message:
-      "Directory " + projectName + " is invalid. Do you want to continue?",
+      'Directory ' + projectName + ' is invalid. Do you want to continue?',
     validator: /y[es]*|n[o]?/,
-    warning: "Please respond with y(es) or n(o)",
-    default: "no"
-  };
+    warning: 'Please respond with y(es) or n(o)',
+    default: 'no',
+  }
 
   promptObj.get(property, function(err, result) {
-    if (result.invalidProjectName[0] === "y") {
-      onSuccessAnswer(projectName, cmd);
+    if (result.invalidProjectName[0] === 'y') {
+      onSuccessAnswer(projectName, cmd)
     } else {
-      onFailedAnswer();
+      onFailedAnswer()
     }
-  });
+  })
 }
 
 async function createVueProjectAfterConfirmation(
@@ -32,28 +30,28 @@ async function createVueProjectAfterConfirmation(
   onSuccessAnswer,
   onFailedAnswer,
   name,
-  cmd
+  cmd,
 ) {
-  promptObj.start();
+  promptObj.start()
 
   const property = {
-    name: "directoryExistAndContinue",
-    message: "Directory " + name + " already exists. Continue?",
+    name: 'directoryExistAndContinue',
+    message: 'Directory ' + name + ' already exists. Continue?',
     validator: /y[es]*|n[o]?/,
-    warning: "Please respond with y(es) or n(o)",
-    default: "no"
-  };
+    warning: 'Please respond with y(es) or n(o)',
+    default: 'no',
+  }
 
   promptObj.get(property, async function(err, result) {
-    if (result.directoryExistAndContinue[0] === "y") {
-      await onSuccessAnswer(name, cmd);
+    if (result.directoryExistAndContinue[0] === 'y') {
+      await onSuccessAnswer(name, cmd)
     } else {
-      await onFailedAnswer();
+      await onFailedAnswer()
     }
-  });
+  })
 }
 
 module.exports = {
   promptForInvalidProjectName,
-  createVueProjectAfterConfirmation
-};
+  createVueProjectAfterConfirmation,
+}

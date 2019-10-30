@@ -1,96 +1,96 @@
-const chalk = require("chalk");
-const execSync = require("child_process").execSync;
-const semverRegex = require('semver-regex');
+const chalk = require('chalk')
+const execSync = require('child_process').execSync
+const semverRegex = require('semver-regex')
 
-const constantObjects = require("./constants");
+const constantObjects = require('./constants')
 
 function isProjectNameValidForCrna(projectName) {
   const regExpForValidProjectName = new RegExp(
-    constantObjects.regExpForValidCrnaDirectory
-  );
+    constantObjects.regExpForValidCrnaDirectory,
+  )
   if (projectName && regExpForValidProjectName.test(projectName)) {
-    return true;
+    return true
   }
-  return false;
+  return false
 }
 
 function isProjectNameValidForRn(projectName) {
   const regExpForValidProjectName = new RegExp(
-    constantObjects.regExpForValidRnDirectory
-  );
+    constantObjects.regExpForValidRnDirectory,
+  )
   if (projectName && regExpForValidProjectName.test(projectName)) {
-    return true;
+    return true
   }
-  return false;
+  return false
 }
 
 function isProjectNameValid(projectName, isCrnaProject) {
-  let response = false;
+  let response = false
   if (isCrnaProject) {
-    response = isProjectNameValidForCrna(projectName);
+    response = isProjectNameValidForCrna(projectName)
   } else {
-    response = isProjectNameValidForRn(projectName);
+    response = isProjectNameValidForRn(projectName)
   }
-  return response;
+  return response
 }
 
 function getYarnVersionIfAvailable() {
-  let yarnVersion;
+  let yarnVersion
   try {
     // execSync returns a Buffer -> convert to string
-    if (process.platform.startsWith("win")) {
-      yarnVersion = (execSync("yarn --version").toString() || "").trim();
+    if (process.platform.startsWith('win')) {
+      yarnVersion = (execSync('yarn --version').toString() || '').trim()
     } else {
       yarnVersion = (
-        execSync("yarn --version 2>/dev/null").toString() || ""
-      ).trim();
+        execSync('yarn --version 2>/dev/null').toString() || ''
+      ).trim()
     }
   } catch (error) {
-    return null;
+    return null
   }
-  return yarnVersion;
+  return yarnVersion
 }
 
 function getCrnaVersionIfAvailable() {
-  let crnaVersion = null;
+  let crnaVersion = null
   try {
     // execSync returns a Buffer -> convert to string
-    if (process.platform.startsWith("win")) {
+    if (process.platform.startsWith('win')) {
       crnaVersion = (
         execSync(`${constantObjects.crnaPackageName} --version`).toString() ||
-        ""
-      ).trim();
+        ''
+      ).trim()
     } else {
       crnaVersion = (
         execSync(
-          `${constantObjects.crnaPackageName} --version 2>/dev/null`
-        ).toString() || ""
-      ).trim();
+          `${constantObjects.crnaPackageName} --version 2>/dev/null`,
+        ).toString() || ''
+      ).trim()
     }
   } catch (error) {
-    console.log(chalk.red("An error occurred while getting Expo CLI version"), error);
-    return null;
+    console.log(chalk.red('An error occurred while getting Expo CLI version'), error)
+    return null
   }
-  return crnaVersion;
+  return crnaVersion
 }
 
 function getReactNativeCLIifAvailable() {
   // Get package version command and discard stderr on *nix systems
-  const processCommand = process.platform.startsWith("win")
+  const processCommand = process.platform.startsWith('win')
     ? `${constantObjects.rnPackageName} --version`
     : `${constantObjects.rnPackageName} --version 2>/dev/null`
 
   try {
     // execSync returns a Buffer -> convert to string
-    const commandResult = (execSync(processCommand).toString() || "").trim();
-    const regexMatches = commandResult.match(semverRegex());
+    const commandResult = (execSync(processCommand).toString() || '').trim()
+    const regexMatches = commandResult.match(semverRegex())
     const packageSemver = regexMatches.length > 0
       ? regexMatches[0] // longest first match
-      : "";
-    return packageSemver;
+      : ''
+    return packageSemver
   } catch (error) {
-    console.log(chalk.red("An error occurred while getting React Native CLI version"));
-    return null;
+    console.log(chalk.red('An error occurred while getting React Native CLI version'))
+    return null
   }
 }
 
@@ -98,5 +98,5 @@ module.exports = {
   isProjectNameValid,
   getYarnVersionIfAvailable,
   getCrnaVersionIfAvailable,
-  getReactNativeCLIifAvailable
-};
+  getReactNativeCLIifAvailable,
+}

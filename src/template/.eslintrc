@@ -1,4 +1,7 @@
 {
+  "extends": [
+    "plugin:vue/essential"
+  ],
   "rules": {
     "vue/v-bind-style": ["error", "shorthand"],
     "vue/v-on-style": ["error", "shorthand"],

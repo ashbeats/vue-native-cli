@@ -51,9 +51,10 @@ export const installPackages = (
 
 export const initWithExpo = (
   projectName: ProjectName,
+  packageManager: PackageManagerName,
 ): [Command, CommandArgs] => [
   expoPackageName,
-  ['init', '--template=blank', projectName],
+  ['init', '--template=blank', projectName, `--${packageManager}`],
 ]
 
 export const initWithRNCLI = (

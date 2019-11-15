@@ -64,7 +64,7 @@ export async function createVueNativeApp(
   )
 
   if (useExpo) {
-    const [command, args] = initWithExpo(projectName)
+    const [command, args] = initWithExpo(projectName, packageManager)
     await spawnAsync(command, args)
   } else {
     const [command, args] = initWithRNCLI(projectName)

@@ -38,6 +38,7 @@ async function checkForInstalledExpoCLI(): Promise<void> {
   const spinner = ora(chalk.cyan('Checking if Expo CLI is installed...'))
 
   try {
+    spinner.start()
     const expoVersion = await getExpoCLIVersion()
     spinner.succeed(chalk.green(`Found Expo CLI ${expoVersion}`))
   } catch (error) {
@@ -54,6 +55,7 @@ async function checkForInstalledReactNativeCLI(): Promise<void> {
   )
 
   try {
+    spinner.start()
     const reactNativeCLIVersion = await getReactNativeCLIVersion()
     spinner.succeed(
       chalk.green(`Found React Native CLI ${reactNativeCLIVersion}`),
@@ -93,7 +95,7 @@ export async function handlePreExistingDirectory(
 
   const spinner = ora(
     chalk.yellow(`Removing file/directory with name ${projectName}`),
-  )
+  ).start()
 
   await removeDirectory(projectName)
 

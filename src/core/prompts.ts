@@ -17,6 +17,7 @@ export async function getPackageManager(): Promise<PackageManagerName> {
 
   let yarnInstalled = false
   try {
+    spinner.start()
     const yarnVersion = await getYarnVersion()
     spinner.succeed(chalk.green(`Found Yarn version ${yarnVersion}`))
     yarnInstalled = true

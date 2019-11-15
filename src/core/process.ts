@@ -11,10 +11,15 @@ export function spawnAsync(command: Command, args: CommandArgs): Promise<void> {
     const child = spawn(command, args, { shell: true, stdio: 'inherit' })
 
     child.on('error', () => {
+      console.log()
       reject()
     })
 
     child.on('exit', () => {
+      // A hack that seems to ensure the main process continues
+      // after the child exits
+      // TODO: look into why this happens
+      console.log()
       resolve()
     })
   })

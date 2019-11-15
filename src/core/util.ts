@@ -10,8 +10,8 @@ import { terminate } from './control'
 import { getExpoCLIVersion, getReactNativeCLIVersion } from './process'
 import { confirmOverwriteDirectory } from './prompts'
 
-function directoryExists(directory: string): Promise<boolean> {
-  return promisify(fs.exists)(directory)
+export function exists(handle: string): Promise<boolean> {
+  return promisify(fs.exists)(handle)
 }
 
 export function rename(src: string, dest: string): Promise<void> {
@@ -81,9 +81,9 @@ export async function ensureCLIDependencyIsInstalled(
 export async function handlePreExistingDirectory(
   projectName: ProjectName,
 ): Promise<void> {
-  const directoryAlreadyExists = await directoryExists(projectName)
+  const handleAlreadyExists = await exists(projectName)
 
-  if (!directoryAlreadyExists) {
+  if (!handleAlreadyExists) {
     return
   }
 

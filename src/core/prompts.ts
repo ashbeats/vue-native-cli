@@ -54,7 +54,7 @@ export async function confirmOverwriteDirectory(
     {
       name: 'overWriteExistingDirectory',
       type: 'confirm',
-      message: `A directory with the name ${dirname} already exists. Overwrite?`,
+      message: `A file or directory with the name ${dirname} already exists. Overwrite?`,
     },
   ]
 

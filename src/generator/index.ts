@@ -16,7 +16,7 @@ import {
 } from '../core/constants'
 import { executeInDirectory } from '../core/control'
 import { spawnAsync } from '../core/process'
-import { readFile, remove, writeFile } from '../core/util'
+import { exists, readFile, remove, writeFile } from '../core/util'
 
 async function getSourceFileExtensions(): Promise<string[]> {
   const { getDefaultConfig } = await import(
@@ -103,7 +103,10 @@ export async function createVueNativeApp(
     await remove('App.js')
 
     // Delete the App.test.js file
-    await remove('App.test.js')
+    const testFileExists = await exists('App.test.js')
+    if (testFileExists) {
+      await remove('App.test.js')
+    }
 
     if (useExpo) {
       const fileContents = await readFile(path.join(appJsonPath))

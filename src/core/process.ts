@@ -6,7 +6,7 @@ import { Command, CommandArgs } from '../types'
 import { expoVersion, reactNativeCLIVersion, yarnVersion } from './commands'
 import { regexMatch } from './validation'
 
-export function spawnAsync<T>(command: Command, args: CommandArgs): Promise<T> {
+export function spawnAsync(command: Command, args: CommandArgs): Promise<void> {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, { shell: true, stdio: 'inherit' })
 

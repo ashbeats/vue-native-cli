@@ -145,7 +145,7 @@ function createRNProjectSync(projectName, cmd) {
   ).start();
   const rnProjectCreationResponse = spawnSync(
     constantObjects.rnPackageName,
-    ["init", projectName, "--version", constantObjects.stableRNVersion],
+    ["init", projectName ],
     { stdio: "inherit", shell: true }
   );
   spinner.succeed(
